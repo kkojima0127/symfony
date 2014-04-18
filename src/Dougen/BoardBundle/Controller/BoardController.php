@@ -20,12 +20,13 @@ class BoardController extends Controller
      */
     public function indexAction(Request $request)
     {
+        // スレッド全件取得
         $threads = $this->getDoctrine()
             ->getRepository('DougenBoardBundle:Thread')
             ->findAll();
 
+        // スレッド用フォーム作成
         $thread = new Thread();
-        $thread->setTitle('サンプルスレッド');
         $form = $this->createFormBuilder($thread)
             ->add('title', 'text')
             ->getForm();
@@ -33,6 +34,7 @@ class BoardController extends Controller
         if ($request->getMethod() == 'POST') {
             $form->handleRequest($request);
             if ($form->isValid()) {
+                // 新スレッド保存処理
                 $now = new \DateTime();
                 $thread->setCreated($now);
                 $thread->setModified($now);
@@ -45,34 +47,6 @@ class BoardController extends Controller
         }
         
         return array('form' => $form->createView(), 'threads' => $threads);
-        /*
-        if ($name == 'test') {
-            $redirect =  $this->redirect($this->generateUrl('_write_board'));
-            $foward   = $this->forward('DougenBoardBundle:Board:write', array('color' => 'green')); 
-            $request = $this->getRequest();
-            var_dump($request->query->get('test'));
-        }
-         */
-        
-        /*
-        $post = new Post();
-        $post->setTitle('Initial apply');
-        $post->setContent('テストコンテンツ');
-        $now = new \DateTime();
-        $post->setCreated($now);
-        $post->setModified($now);
-        $em = $this->getDoctrine()->getEntityManager();
-        $em->persist($post);
-        $em->flush();
-         */
-
-        // アノテーションのテンプレートを使用した場合
-        // renderを使用した場合
-        // $this->render('DougenBoardBundle:Default:index.html.twig', ['name' => $name]);
-        // return $this->render('DougenBoardBundle:Default:index.html.twig', ['name' => $name]);
-        // Responseオブジェクトを利用した場合
-        // $response = new Response('<html><body>Hello '.$name.'!</body></html>');
-        // return $response;
     }
 
     /**
@@ -81,29 +55,35 @@ class BoardController extends Controller
      */
     public function threadAction($thread_id, Request $request)
     {
+        // 対象スレッドの情報取得
         $thread = $this->getDoctrine()
             ->getRepository('DougenBoardBundle:Thread')
             ->find($thread_id);
+        // 関連投稿全件取得
         $posts = $this->getDoctrine()
             ->getRepository('DougenBoardBundle:Post')
-            ->findAll();
+            ->findByThreadId($thread_id);
 
+        // 投稿フォーム作成
         $post = new Post();
         $form = $this->createFormBuilder($post)
             ->add('name', 'text')
             ->add('content', 'textarea')
             ->getForm();
 
-        $form->handleRequest($request);
-        if ($form->isValid()) {
-            $now = new \DateTime();
-            $post->setCreated($now);
-            $post->setModified($now);
-            $post->setThreadId($thread_id);
-            $em = $this->getDoctrine()->getEntityManager();
-            $em->persist($post);
-            $em->flush();
-            return $this->redirect($this->generateUrl('_thread', array('thread_id' => $thread_id)));
+        if ($request->getMethod() == 'POST') {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                // 投稿保存処理
+                $now = new \DateTime();
+                $post->setCreated($now);
+                $post->setModified($now);
+                $post->setThreadId($thread_id);
+                $em = $this->getDoctrine()->getEntityManager();
+                $em->persist($post);
+                $em->flush();
+                return $this->redirect($this->generateUrl('_thread', array('thread_id' => $thread_id)));
+            }
         }
 
         return array('form' => $form->createView(), 'thread' => $thread, 'posts' => $posts);
@@ -116,14 +96,5 @@ class BoardController extends Controller
     public function deleteAction()
     {
         return array();
-    }
-
-    /**
-     * @Route("/test")
-     * @Template("DougenBoardBundle:Board:test2.html.twig")
-     */
-    public function testAction()
-    {
-        return array('messsage' => 'テンプレート指定');
     }
 }
