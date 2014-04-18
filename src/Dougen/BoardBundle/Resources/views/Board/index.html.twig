@@ -1,0 +1,23 @@
+{% extends "DougenBoardBundle::layout.html.twig" %}
+
+{% block content %}
+<h1>簡易掲示板</h1>
+<h2>新しいスレッドを立てる</h2>
+
+<div class="highlight">
+<form action="{{ path('_index') }}" method="post" {{ form_enctype(form) }} >
+  {{ form_widget(form) }}
+  <input type="submit" class="btn btn-primary" />
+</form>
+</div>
+
+<h3>スレッドリスト</h3>
+<div class="highlight">
+<ul>
+  {% for thread in threads %} 
+  <li>ID{{ thread.id }}:　<a href="{{ path('_thread', { 'thread_id': thread.id}) }}">{{ thread.title }}</a></li>
+{% endfor %}
+</ul>
+</div>
+
+{% endblock %}

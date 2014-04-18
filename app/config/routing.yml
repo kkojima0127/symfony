@@ -1,3 +1,8 @@
+dougen_board:
+    resource: "@DougenBoardBundle/Controller/"
+    type:     annotation
+    prefix:   /dougen
+
 acme_hello:
     resource: "@AcmeHelloBundle/Resources/config/routing.yml"
     prefix:   /

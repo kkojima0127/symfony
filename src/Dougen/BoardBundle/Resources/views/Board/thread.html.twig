@@ -1,0 +1,30 @@
+{% extends "DougenBoardBundle::layout.html.twig" %}
+
+{% block content %}
+<h1>簡易掲示板</h1>
+<h2>{{ thread.title }}</h2>
+
+
+<table class="table table-striped">
+  <tr>
+    <th class="col-md-2">投稿者</th>
+    <th>メッセージ</th>
+    <th class="col-md-2">投稿日時</th>
+  </tr>
+  {% for post in posts %}
+  <tr>
+    <td>{{ post.name }}</td>
+    <td>{{ post.content }}</td>
+    <td>{{ post.created|date('Y/m/d H:i') }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h3>新規投稿</h3>
+<form action="{{ path('_thread', { 'thread_id': thread.id }) }}" method="post" {{ form_enctype(form) }} >
+  {{ form_widget(form) }}
+  <input type="submit" class="btn btn-primary" />
+</form>
+
+<a href="{{ path('_index') }}" class="btn btn-warning">戻る</a>
+{% endblock %}
