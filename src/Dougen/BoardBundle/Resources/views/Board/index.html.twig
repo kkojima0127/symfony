@@ -6,8 +6,13 @@
 
 <div class="highlight">
 <form action="{{ path('_index') }}" method="post" {{ form_enctype(form) }} >
-  {{ form_widget(form) }}
-  <input type="submit" class="btn btn-primary" />
+  <div class="form-group">
+  {{ form_label(form.title, 'スレッド名：') }}
+  {{ form_row(form.title, {'attr': {'class': 'form-control', 'placeholder': 'スレッド名を入力して下さい'}}) }}
+  {{ form_errors(form) }}
+  {{ form_rest(form) }}
+  </div>
+  <input type="submit" class="btn btn-primary common-btn" />
 </form>
 </div>
 

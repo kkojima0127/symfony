@@ -28,7 +28,7 @@ class BoardController extends Controller
         // スレッド用フォーム作成
         $thread = new Thread();
         $form = $this->createFormBuilder($thread)
-            ->add('title', 'text')
+            ->add('title', 'text', ['label' => false])
             ->getForm();
 
         if ($request->getMethod() == 'POST') {
@@ -67,8 +67,8 @@ class BoardController extends Controller
         // 投稿フォーム作成
         $post = new Post();
         $form = $this->createFormBuilder($post)
-            ->add('name', 'text')
-            ->add('content', 'textarea')
+            ->add('name', 'text', ['max_length' => 30, 'label' => false])
+            ->add('content', 'textarea', ['max_length' => 300, 'label' => false])
             ->getForm();
 
         if ($request->getMethod() == 'POST') {
@@ -90,11 +90,18 @@ class BoardController extends Controller
     }
 
     /**
-     * @Route("/delete")
+     * @Route("delete/{post_id}/{thread_id}", name="_delete")
      * @Template()
      */
-    public function deleteAction()
+    public function deleteAction($post_id, $thread_id, Request $request)
     {
-        return array();
+        if ($request->getMethod() == 'POST') {
+            $em = $this->getDoctrine()->getEntityManager();
+            $post = $em->getRepository('DougenBoardBundle:Post')->find($post_id);
+            $em = $this->getDoctrine()->getEntityManager();
+            $em->remove($post);
+            $em->flush();
+        }
+        return $this->redirect($this->generateUrl('_thread', array('thread_id' => $thread_id)));
     }
 }

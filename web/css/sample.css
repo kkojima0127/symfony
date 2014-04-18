@@ -10,3 +10,11 @@ h1 {
     margin-bottom: 14px;
     padding: 9px 14px;
 }
+
+.common-btn {
+    margin: 10px;
+}
+
+#form_content {
+    height:120px;
+}
