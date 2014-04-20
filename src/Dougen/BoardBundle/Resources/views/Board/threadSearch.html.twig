@@ -1,0 +1,28 @@
+{% extends "DougenBoardBundle::layout.html.twig" %}
+
+{% block content %}
+<h1>簡易掲示板</h1>
+<h2>スレッド検索</h2>
+
+<div class="highlight">
+<form action="{{ path('_thread_search') }}" method="post" {{ form_enctype(form) }} >
+  <div class="form-group">
+  {{ form_label(form.title, 'スレッド名：') }}
+  {{ form_row(form.title, {'attr': {'class': 'form-control', 'placeholder': 'スレッド名を入力して下さい'}}) }}
+  {{ form_errors(form) }}
+  {{ form_rest(form) }}
+  </div>
+  <input type="submit" value="検索" class="btn btn-primary common-btn" />
+</form>
+</div>
+
+<h3>スレッドリスト</h3>
+<div class="highlight">
+<ul>
+  {% for thread in threads %} 
+  <li>ID{{ thread.id }}:　<a href="{{ path('_thread', { 'thread_id': thread.id}) }}">{{ thread.title }}</a></li>
+  {% endfor %}
+</ul>
+</div>
+
+{% endblock %}

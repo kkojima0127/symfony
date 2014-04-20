@@ -24,22 +24,42 @@ class BoardController extends Controller
         $threads = $this->getDoctrine()
             ->getRepository('DougenBoardBundle:Thread')
             ->findAll();
+            /* その他のメソッド */
 
-        // スレッド用フォーム作成
+            // 任意のカラム値に基づき1件のみ取得
+            // ->findOneById($id)
+            // ->findOneByName($name)
+
+            // 任意のカラム値に基づく前件取得
+            // ->findByPrice($price)
+
+            // 複数条件
+            // ->findBy(array('name' => 'hoge', 'status' => 1))
+            // ->findOneBy(array('name' => 'hoge', 'status' => 1))
+
+
+        
+
+        // Threadオブジェクト生成
         $thread = new Thread();
+        // Thread用フォーム作成
         $form = $this->createFormBuilder($thread)
             ->add('title', 'text', ['label' => false])
             ->getForm();
 
         if ($request->getMethod() == 'POST') {
             $form->handleRequest($request);
+            // バリデーションを通った場合
             if ($form->isValid()) {
-                // 新スレッド保存処理
+                // DateTimeオブジェクトを生成して現在時をセット
                 $now = new \DateTime();
                 $thread->setCreated($now);
                 $thread->setModified($now);
+                // エンティティマネージャ生成
                 $em = $this->getDoctrine()->getEntityManager();
+                // persistメソッドでthreadオブジェクトをドクトリンで管理
                 $em->persist($thread);
+                // 保存
                 $em->flush();
                 
                 return $this->redirect($this->generateUrl('_index'));
@@ -90,6 +110,24 @@ class BoardController extends Controller
     }
 
     /**
+     * @Route("update/{post_id}/{thread_id}", name="_update")
+     * @Template()
+     */
+     public function updateAction($post_id, $thread_id) {
+         $em = $this->getDoctrine()->getEntityManager();
+         // Doctrineからフェッチしているのでpostのデータは既にemに管理された状態になっている
+         $post = $em->getRepository('DougenBoardBundle:Post')->findOneById($post_id);
+
+         if (!$post) {
+            throw $this->createNotFoundException('投稿内容が存在しません');
+         }
+         $post->setContent('new data');
+         // 保存
+         $em->flush();
+         
+     }
+
+    /**
      * @Route("delete/{post_id}/{thread_id}", name="_delete")
      * @Template()
      */
@@ -97,11 +135,34 @@ class BoardController extends Controller
     {
         if ($request->getMethod() == 'POST') {
             $em = $this->getDoctrine()->getEntityManager();
-            $post = $em->getRepository('DougenBoardBundle:Post')->find($post_id);
-            $em = $this->getDoctrine()->getEntityManager();
+            $post = $em->getRepository('DougenBoardBundle:Post')->findOneById($post_id);
             $em->remove($post);
             $em->flush();
         }
         return $this->redirect($this->generateUrl('_thread', array('thread_id' => $thread_id)));
+    }
+
+    /**
+     * @Route("thread_search", name="_thread_search")
+     * @Template()
+     */
+    public function threadSearchAction(Request $request)
+    {
+        // 投稿フォーム作成
+        $thread = new Thread();
+        $form = $this->createFormBuilder($thread)
+            ->add('title', 'text', ['max_length' => 30, 'label' => false])
+            ->getForm();
+
+        if ($request->getMethod() == 'POST') {
+            $form->handleRequest($request);
+            
+            $em = $this->getDoctrine()->getEntityManager();
+            $query = $em->createQuery(
+                'SELECT t FROM DougenBoardBundle:Thread t WHERE t.title LIKE :keyword'
+            )->setParameter('keyword', '%'.$thread->getTitle().'%');
+            $threads = $query->getResult();
+        }
+        return array('form' => $form->createView(), 'threads' => $threads);
     }
 }
