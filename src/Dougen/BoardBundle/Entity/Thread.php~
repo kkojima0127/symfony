@@ -6,12 +6,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Post
+ * Thread
  *
  * @ORM\Table()
- * @ORM\Entity(repositoryClass="Dougen\BoardBundle\Entity\PostRepository")
+ * @ORM\Entity
  */
-class Post
+class Thread
 {
     /**
      * @var integer
@@ -23,27 +23,12 @@ class Post
     private $id;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="thread_id", type="integer")
-     */
-    private $threadId;
-
-    /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="title", type="string", length=255)
      * @Assert\NotBlank()
      */
-    private $name;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="content", type="text")
-     * @Assert\NotBlank()
-     */
-    private $content;
+    private $title;
 
     /**
      * @var \DateTime
@@ -71,79 +56,33 @@ class Post
     }
 
     /**
-     * Set threadId
+     * Set title
      *
-     * @param integer $threadId
-     * @return Post
+     * @param string $title
+     * @return Thread
      */
-    public function setThreadId($threadId)
+    public function setTitle($title)
     {
-        $this->threadId = $threadId;
+        $this->title = $title;
 
         return $this;
     }
 
     /**
-     * Get threadId
-     *
-     * @return integer 
-     */
-    public function getThreadId()
-    {
-        return $this->threadId;
-    }
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return Post
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
+     * Get title
      *
      * @return string 
      */
-    public function getName()
+    public function getTitle()
     {
-        return $this->name;
-    }
-
-    /**
-     * Set content
-     *
-     * @param string $content
-     * @return Post
-     */
-    public function setContent($content)
-    {
-        $this->content = $content;
-
-        return $this;
-    }
-
-    /**
-     * Get content
-     *
-     * @return string 
-     */
-    public function getContent()
-    {
-        return $this->content;
+        return $this->title;
     }
 
     /**
      * Set created
      *
      * @param \DateTime $created
-     * @return Post
+     * @return Thread
      */
     public function setCreated($created)
     {
@@ -166,7 +105,7 @@ class Post
      * Set modified
      *
      * @param \DateTime $modified
-     * @return Post
+     * @return Thread
      */
     public function setModified($modified)
     {

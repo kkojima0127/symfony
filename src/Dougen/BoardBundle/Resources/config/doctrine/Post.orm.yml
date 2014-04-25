@@ -1,0 +1,7 @@
+Dougen\BoardBundle\Entity\Post:
+  type: entity
+  
+  oneToMany:
+    posts:
+      targetEntity: Post
+      mappedBy: thread

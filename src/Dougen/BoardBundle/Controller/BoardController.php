@@ -1,7 +1,6 @@
 <?php
 
 namespace Dougen\BoardBundle\Controller;
-
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -11,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 use Dougen\BoardBundle\Entity\Thread;
 use Dougen\BoardBundle\Entity\Post;
+use Dougen\BoardBundle\Entity\PostRepository;
 
 class BoardController extends Controller
 {
@@ -157,11 +157,33 @@ class BoardController extends Controller
         if ($request->getMethod() == 'POST') {
             $form->handleRequest($request);
             
+            // DQLを使用したパターン 
             $em = $this->getDoctrine()->getEntityManager();
             $query = $em->createQuery(
                 'SELECT t FROM DougenBoardBundle:Thread t WHERE t.title LIKE :keyword'
             )->setParameter('keyword', '%'.$thread->getTitle().'%');
             $threads = $query->getResult();
+
+            // クエリビルダを使用したパターン 
+            $repository = $this->getDoctrine()
+                ->getRepository('DougenBoardBundle:Thread');
+            $query = $repository->createQueryBuilder('t')
+                ->where('t.title LIKE :keyword')
+                ->setParameter('keyword', "%{$thread->getTitle()}%")
+                ->getQuery();
+            $result = $query->getResult();
+            //var_dump($result);
+            
+            // リポジトリクラスのメソッドを使用したパターン
+            $em = $this->getDoctrine()->getManager();
+            $test = $em->getRepository('DougenBoardBundle:Post')
+                ->findAllOrderedByName();
+            //var_dump($test);
+        } else {
+            // スレッド全件取得
+            $threads = $this->getDoctrine()
+                ->getRepository('DougenBoardBundle:Thread')
+                ->findAll();
         }
         return array('form' => $form->createView(), 'threads' => $threads);
     }

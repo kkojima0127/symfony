@@ -3,6 +3,7 @@
 namespace Dougen\BoardBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -13,6 +14,16 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Thread
 {
+    /**
+     * @ORM\OneToMany(targetEntity="Post", mappedBy="thread")
+     */
+     protected $posts;
+     
+     public function __construct()
+     {
+         $this->posts = new ArrayCollection;
+     }
+
     /**
      * @var integer
      *
@@ -123,4 +134,5 @@ class Thread
     {
         return $this->modified;
     }
+
 }
